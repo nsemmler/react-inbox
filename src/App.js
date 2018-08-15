@@ -179,8 +179,23 @@ class App extends Component {
   render() {
     return (
       <div className="container">
-        <Toolbar selectAllSelectedBtn={ this.selectAllSelectedBtn } numUnreadMsgs={ this.numUnreadMsgs } unreadMsgsMessage={ this.unreadMsgsMessage } selectAll={ this.selectAll } markAsRead={ this.markAsRead } markAsUnread={ this.markAsUnread } deleteSelectedMessages={ this.deleteSelectedMessages } addLabelToMsg={ this.addLabelToMsg } removeLabelFromMsg={ this.removeLabelFromMsg } />
-        <MessageList messages={ this.state.messages } starMessage={ this.starMessage } selectMessage={ this.selectMessage } />
+        <Toolbar
+          selectAllSelectedBtn={ this.selectAllSelectedBtn }
+          numUnreadMsgs={ this.numUnreadMsgs }
+          unreadMsgsMessage={ this.unreadMsgsMessage }
+          selectAll={ this.selectAll }
+          markAsRead={ this.markAsRead }
+          markAsUnread={ this.markAsUnread }
+          deleteSelectedMessages={ this.deleteSelectedMessages }
+          addLabelToMsg={ this.addLabelToMsg }
+          removeLabelFromMsg={ this.removeLabelFromMsg }
+        />
+
+        <MessageList
+          messages={ this.state.messages }
+          starMessage={ this.starMessage }
+          selectMessage={ this.selectMessage }
+        />
       </div>
     )
   }
