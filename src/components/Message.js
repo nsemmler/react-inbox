@@ -1,12 +1,8 @@
-// This is a functional component - doesn't need to be a class component
-// because we aren't storing state with it.  It just renders stuff
-
 import React from 'react'
 
 const Message = ({ message, starMessage, selectMessage }) => {
   // message = { id, subject, read, starred, selected, labels }
 
-  // can't do if/else in JSX?
   const isRead = message.read ? 'read' : 'unread'
   const isStarred = message.starred ? 'fa-star' : 'fa-star-o'
   const isSelected = message.selected ? 'selected' : ''
