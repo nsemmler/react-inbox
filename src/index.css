@@ -10,7 +10,9 @@
   color: black;
 }
 
-.message a:hover, .message a:active, .message a:focus {
+.message a:hover,
+.message a:active,
+.message a:focus {
   text-decoration: none;
 }
 
