@@ -3,7 +3,7 @@ import Message from './Message'
 
 const MessageList = ({ messages, starMessage, selectMessage }) => {
   return (
-    <div className="">
+    <div className="messageList">
       {
         messages.map((message, i) => {
           return <Message key={i} message={ message } starMessage={ starMessage } selectMessage={ selectMessage } />

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Toolbar from './components/Toolbar'
 import MessageList from './components/MessageList'
+import MessageForm from './components/MessageForm'
+import axios from 'axios'
 import './App.css';
 
 class App extends Component {
@@ -9,75 +11,27 @@ class App extends Component {
     // All components need access to the Message data .: move up into App so all have access to it
     this.state = {
       messages: [
-        {
-          "id": 1,
-          "subject": "You can't input the protocol without calculating the mobile RSS protocol!",
-          "read": false,
-          "starred": true,
-          "labels": ["dev", "personal"]
-        },
-        {
-          "id": 2,
-          "subject": "connecting the system won't do anything, we need to input the mobile AI panel!",
-          "read": false,
-          "starred": false,
-          "selected": true,
-          "labels": []
-        },
-        {
-          "id": 3,
-          "subject": "Use the 1080p HTTP feed, then you can parse the cross-platform hard drive!",
-          "read": false,
-          "starred": true,
-          "labels": ["dev"]
-        },
-        {
-          "id": 4,
-          "subject": "We need to program the primary TCP hard drive!",
-          "read": true,
-          "starred": false,
-          "selected": true,
-          "labels": []
-        },
-        {
-          "id": 5,
-          "subject": "If we override the interface, we can get to the HTTP feed through the virtual EXE interface!",
-          "read": false,
-          "starred": false,
-          "labels": ["personal"]
-        },
-        {
-          "id": 6,
-          "subject": "We need to back up the wireless GB driver!",
-          "read": true,
-          "starred": true,
-          "labels": []
-        },
-        {
-          "id": 7,
-          "subject": "We need to index the mobile PCI bus!",
-          "read": true,
-          "starred": false,
-          "labels": ["dev", "personal"]
-        },
-        {
-          "id": 8,
-          "subject": "If we connect the sensor, we can get to the HDD port through the redundant IB firewall!",
-          "read": true,
-          "starred": true,
-          "labels": []
-        }
+        { id: 1, subject: "dummy data", read: false, starred: false, labels: ["dev", "personal"] }
       ]
     }
   }
 
-  starMessage = (messageId) => {
-    var updatedMessages = this.state.messages.map(msg => {
-      if (msg.id === messageId) msg.starred = !msg.starred
-      return msg
+  componentDidMount () {
+    this.getMessages()
+  }
+
+  async getMessages () {
+    const response = await axios.get('http://localhost:8082/api/messages')
+    this.setState({ messages: response.data })
+  }
+
+  starMessage = async (messageId) => {
+    await axios.patch('http://localhost:8082/api/messages', {
+      messageIds: [ messageId ],
+      command: 'star'
     })
 
-    this.setState({ messages: updatedMessages })
+    this.getMessages()
   }
 
   selectMessage = (messageId) => {
@@ -108,22 +62,28 @@ class App extends Component {
     this.setState({ messages: updatedMessages })
   }
 
-  markAsRead = () => {
-    const updatedMessages = this.state.messages.map(msg => {
-      if (msg.selected) msg.read = true
-      return msg
+  markAsRead = async () => {
+    var selectedMessages = this.state.messages.filter(msg => msg.selected).map(msg => msg.id)
+
+    await axios.patch('http://localhost:8082/api/messages', {
+      messageIds: selectedMessages,
+      command: 'read',
+      read: true
     })
 
-    this.setState({ messages: updatedMessages })
+    this.getMessages()
   }
 
-  markAsUnread = () => {
-    const updatedMessages = this.state.messages.map(msg => {
-      if (msg.selected) msg.read = false
-      return msg
+  markAsUnread = async () => {
+    var selectedMessages = this.state.messages.filter(msg => msg.selected).map(msg => msg.id)
+
+    await axios.patch('http://localhost:8082/api/messages', {
+      messageIds: selectedMessages,
+      command: 'read',
+      read: false
     })
 
-    this.setState({ messages: updatedMessages })
+    this.getMessages()
   }
 
   numUnreadMsgs = () => {
@@ -142,43 +102,62 @@ class App extends Component {
     else { return 'fa-minus-square-o' }
   }
 
-  deleteSelectedMessages = () => {
-    const updatedMessages = this.state.messages.filter(msg => !msg.selected)
+  deleteSelectedMessages = async () => {
+    var selectedMessages = this.state.messages.filter(msg => msg.selected).map(msg => msg.id)
 
-    this.setState({ messages: updatedMessages })
+    await axios.patch('http://localhost:8082/api/messages', {
+      messageIds: selectedMessages,
+      command: 'delete'
+    })
+
+    this.getMessages()
   }
 
-  addLabelToMsg = (e) => {
+  addLabelToMsg = async (e) => {
     const label = document.getElementById('addlabel').value
+    var selectedMessages = this.state.messages.filter(msg => (msg.selected && !msg.labels.includes(label))).map(msg => msg.id)
 
-    const updatedMessages = this.state.messages.map(msg => {
-      if (msg.selected && !msg.labels.includes(label)) msg.labels.push(label)
-      return msg
+    await axios.patch('http://localhost:8082/api/messages', {
+      messageIds: selectedMessages,
+      command: 'addLabel',
+      label: label
     })
 
     document.getElementById('addlabel').selectedIndex = 0
-    this.setState({ messages: updatedMessages })
+    this.getMessages()
   }
 
-  removeLabelFromMsg = (e) => {
+  removeLabelFromMsg = async (e) => {
     const label = document.getElementById('removelabel').value
+    var selectedMessages = this.state.messages.filter(msg => (msg.selected && msg.labels.includes(label))).map(msg => msg.id)
 
-    const updatedMessages = this.state.messages.map(msg => {
-      if (msg.selected && msg.labels.includes(label)) {
-        let i = msg.labels.indexOf(label)
-        msg.labels.splice(i, 1)
-      }
-
-      return msg
+    await axios.patch('http://localhost:8082/api/messages', {
+      messageIds: selectedMessages,
+      command: 'removeLabel',
+      label: label
     })
 
-    document.getElementById('removelabel').selectedIndex = 0
-    this.setState({ messages: updatedMessages })
+    document.getElementById('addlabel').selectedIndex = 0
+    this.getMessages()
+  }
+
+  displayMessageForm = () => {
+    if (document.querySelector('.well').style.display === 'block') document.querySelector('.well').style.display = 'none'
+    else document.querySelector('.well').style.display = 'block'
+  }
+
+  createMessage = async ({ subject, body }) => {
+    await axios.post('http://localhost:8082/api/messages', {
+      subject: subject,
+      body: body
+    })
+
+    this.getMessages()
   }
 
   render() {
     return (
-      <div className="container">
+      <div className="container inbox-container">
         <Toolbar
           selectAllSelectedBtn={ this.selectAllSelectedBtn }
           numUnreadMsgs={ this.numUnreadMsgs }
@@ -189,7 +168,10 @@ class App extends Component {
           deleteSelectedMessages={ this.deleteSelectedMessages }
           addLabelToMsg={ this.addLabelToMsg }
           removeLabelFromMsg={ this.removeLabelFromMsg }
+          displayMessageForm={ this.displayMessageForm }
         />
+
+        <MessageForm createMessage={ this.createMessage } />
 
         <MessageList
           messages={ this.state.messages }

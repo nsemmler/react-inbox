@@ -1,4 +1,5 @@
 .message {
+  width: 100%;
   margin-left: 0px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -74,3 +75,19 @@ footer.spacer {
 .fa-close {
   cursor: pointer;
 }
+
+/*
+.inbox-container {
+  border: 1px solid #000000;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.toolbar {
+  width: 100%;
+  margin-left: 0.1%;
+}
+
+.messageList {
+  border: 1px solid #000000;
+} */

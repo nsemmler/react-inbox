@@ -1,7 +1,7 @@
 import React from 'react'
 import './../App.css'
 
-const Toolbar = ({ selectAllSelectedBtn, numUnreadMsgs, unreadMsgsMessage, selectAll, markAsRead, markAsUnread, deleteSelectedMessages, addLabelToMsg, removeLabelFromMsg }) => {
+const Toolbar = ({ selectAllSelectedBtn, numUnreadMsgs, unreadMsgsMessage, selectAll, markAsRead, markAsUnread, deleteSelectedMessages, addLabelToMsg, removeLabelFromMsg, displayMessageForm }) => {
   return (
     <div className="row toolbar">
       <div className="col-md-12">
@@ -9,6 +9,10 @@ const Toolbar = ({ selectAllSelectedBtn, numUnreadMsgs, unreadMsgsMessage, selec
           <span className="badge badge num-unread-msgs">{ numUnreadMsgs() }</span>
           { unreadMsgsMessage() }
         </p>
+
+        <a className="btn btn-danger" onClick={ displayMessageForm }>
+          <i className="fa fa-plus"></i>
+        </a>
 
         <button className="btn btn-default" onClick={ selectAll }>
           <i className={`fa ${selectAllSelectedBtn()}`}></i>
